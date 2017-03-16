@@ -3,7 +3,7 @@ import logging
 from aiomysql import create_pool, connect
 
 from sqlchemistry.engine.base import BaseEngine
-from sqlchemistry.sql.mysql import MySQLQuery
+from sqlchemistry.sql.backends.mysql import MySQLQuery
 
 
 class MySQLEngine(BaseEngine):
@@ -34,4 +34,15 @@ class MySQLEngine(BaseEngine):
             self._connection = await connect(**credentials)
 
     def get_query(self, table, columns=None):
-        return MySQLQuery(table, columns=columns)
+        return MySQLQuery(table, columns=columns or table.columns())
+
+    def create_table(self, table):
+        clms = '\n'.join('\t{} {},'.format(c.name, c.sql_type)
+                         for c in table.columns())
+        pk = ''
+        primary_key = table.primary_key()
+        if primary_key is not None:
+            pk = '\tPRIMARY KEY ({})\n'.format(primary_key.name)
+
+        return 'CREATE TABLE {} (\n{}\n{});'.format(table.tablename(),
+                                                    clms, pk)
