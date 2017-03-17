@@ -4,8 +4,11 @@ class AbstractType:
         self._args = args
         self._kwargs = kwargs
 
-    def _cast(self, value):
+    def sql_cast(self, value):
         return value
+
+    def get_sql_value(self):
+        return self._sql_cast(self._value)
 
     @property
     def value(self):
@@ -13,7 +16,7 @@ class AbstractType:
 
     @value.setter
     def value(self, value):
-        self._value = self._cast(value)
+        self._value = value
 
 
 class Int(AbstractType):
@@ -37,8 +40,8 @@ class String(AbstractType):
 
 
 class Boolean(AbstractType):
-    def _cast(self, value):
-        return bool(value)
+    def sql_cast(self, value):
+        return 'TRUE' if value else 'FALSE'
 
     def sql_type(self):
         return 'BOOLEAN'

@@ -25,16 +25,24 @@ class Column:
         if self._name is None:
             self._name = column_name
 
+    def set_value(self, value):
+        self._column_type.value = value
+
+    def get_value(self):
+        return self._column_type.value
+
     @property
     def name(self):
         return self._name
 
     def __str__(self):
-        ctype = self._column_type.sql_type()
-        return '<{}: {}>'.format(self._name, ctype)
+        return str(self._column_type.value)
 
     def __repr__(self):
-        return self.__str__()
+        return '<{}: {}>'.format(self.sql_type, self.get_value())
+
+    def __get__(self, instance, owner):
+        return self.get_value()
 
 
 class Table:
@@ -60,3 +68,8 @@ class Table:
                 return ctype
 
         return None
+
+    def __setattr__(self, column, value):
+        for attr, ctype in self.__class__.__dict__.items():
+            if isinstance(ctype, Column) and attr == column:
+                ctype.set_value(value)

@@ -20,5 +20,10 @@ class User(Table):
     string = Column(String)
 
 
-session = Session(MySQLEngine(dsn="mysql+pymysql://a:b@db/name"))
-print(session.create_table(User))
+u = User()
+u.paco = 12.0
+
+a = u.paco
+print(a)
+
+print('Type: {} -- Value: {}'.format(type(u.paco), u.paco))
