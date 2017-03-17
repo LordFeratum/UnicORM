@@ -31,6 +31,9 @@ class Column:
     def get_value(self):
         return self._column_type.value
 
+    def _in(self, algo):
+        print('dentrooooooo')
+
     @property
     def name(self):
         return self._name
@@ -40,9 +43,6 @@ class Column:
 
     def __repr__(self):
         return '<{}: {}>'.format(self.sql_type, self.get_value())
-
-    def __get__(self, instance, owner):
-        return self.get_value()
 
 
 class Table:

@@ -22,8 +22,3 @@ class User(Table):
 
 u = User()
 u.paco = 12.0
-
-a = u.paco
-print(a)
-
-print('Type: {} -- Value: {}'.format(type(u.paco), u.paco))
