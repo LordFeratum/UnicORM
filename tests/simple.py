@@ -20,5 +20,17 @@ class User(Table):
     string = Column(String)
 
 
-u = User()
-u.paco = 12.0
+ss = Session(MySQLEngine(dsn="mysql+pymysql://a:b@host/db"))
+
+print(ss.create_table(User))
+
+q = ss.query(User)
+
+
+user = User()
+user.jamones = 3
+
+b = User.paco == user.jamones
+
+print('\n')
+print(b)

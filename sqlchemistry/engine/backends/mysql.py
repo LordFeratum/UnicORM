@@ -34,15 +34,21 @@ class MySQLEngine(BaseEngine):
             self._connection = await connect(**credentials)
 
     def get_query(self, table, columns=None):
-        return MySQLQuery(table, columns=columns or table.columns())
+        return MySQLQuery(self, table, columns=columns or table.columns())
 
     def create_table(self, table):
-        clms = '\n'.join('\t{} {},'.format(c.name, c.sql_type)
-                         for c in table.columns())
-        pk = ''
-        primary_key = table.primary_key()
-        if primary_key is not None:
-            pk = '\tPRIMARY KEY ({})\n'.format(primary_key.name)
+        def _process_column(column):
+            params = {
+                'name': column.name,
+                'type': column.sql_type,
+                'nullable': ' NOT NULL' if column.is_nullable() else '',
+                'pk': ' PRIMARY KEY' if column.is_primary_key() else '',
+                'inc': ' AUTO_INCREMENT' if column.is_autoincrement() else ''
+            }
+            return '\t{name} {type}{nullable}{inc}{pk}'.format(**params)
 
-        return 'CREATE TABLE {} (\n{}\n{});'.format(table.tablename(),
-                                                    clms, pk)
+        columns = ',\n'.join(_process_column(c) for c in table.columns())
+        corpus = "CREATE TABLE {tablename} (\n{columns}\n);"\
+                 .format(tablename=table.tablename(), columns=columns)
+
+        return corpus

@@ -1,4 +1,5 @@
 from sqlchemistry.types import AbstractType
+from sqlchemistry.sql.operands import Equals
 
 
 class Column:
@@ -8,6 +9,7 @@ class Column:
         else:
             self._column_type = column_type()
 
+        self._table = None
         self._name = kwargs.get('name')
         self._kwargs = kwargs
 
@@ -16,6 +18,12 @@ class Column:
 
     def is_autoincrement(self):
         return self._kwargs.get('autoincrement', False)
+
+    def is_nullable(self):
+        if self.is_primary_key():
+            return True
+
+        return self._kwargs.get('nullable', False)
 
     @property
     def sql_type(self):
@@ -28,48 +36,51 @@ class Column:
     def set_value(self, value):
         self._column_type.value = value
 
+    def set_table(self, table):
+        self._table = table
+
     def get_value(self):
         return self._column_type.value
-
-    def _in(self, algo):
-        print('dentrooooooo')
 
     @property
     def name(self):
         return self._name
 
-    def __str__(self):
-        return str(self._column_type.value)
-
     def __repr__(self):
         return '<{}: {}>'.format(self.sql_type, self.get_value())
 
+    def __eq__(self, obj):
+        return Equals(self._table, self._column_type, obj)
+
 
 class Table:
+    def __new__(cls):
+        cls._init_columns()
+        return super(Table, cls).__new__(cls)
+
+    @classmethod
+    def _init_columns(cls):
+        for name, column in cls.__dict__.items():
+            if isinstance(column, Column):
+                column.set_name(name)
+                column.set_table(cls)
+
     @classmethod
     def tablename(cls):
         return getattr(cls, '__tablename__', cls.__name__.lower())
 
     @classmethod
     def columns(cls):
-        def process_column(column, column_name):
-            column.set_name(column_name)
-            return column
-
-        return [process_column(ctype, attr)
-                for attr, ctype in cls.__dict__.items()
+        return [ctype for ctype in cls.__dict__.values()
                 if isinstance(ctype, Column)]
 
     @classmethod
-    def primary_key(cls):
-        for attr, ctype in cls.__dict__.items():
-            if isinstance(ctype, Column) and ctype.is_primary_key():
-                ctype.set_name(attr)
-                return ctype
-
-        return None
+    def primary_keys(cls):
+        return [ctype for ctype in cls.columns()
+                if ctype.is_primary_key()]
 
     def __setattr__(self, column, value):
+        Table._init_columns()
         for attr, ctype in self.__class__.__dict__.items():
             if isinstance(ctype, Column) and attr == column:
                 ctype.set_value(value)
