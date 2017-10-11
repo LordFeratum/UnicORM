@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  sqlchemistry:
+    build: .
+    command: python SQLChemistry/test/simple.py
+    environment:
+      - DB_DSN=mysql+pymysql://user:user@mysql/sqlchemistry?charset=utf8
+    depends_on:
+      - mysql
+    networks:
+      - sqlchemistry-net
+
+  mysql:
+    image: mysql:5.7
+    networks:
+      - sqlchemistry-net
+    command:
+      - --character-set-server=utf8
+      - --collation-server=utf8_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=sqlchemistry
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user
+    volumes:
+      - sqlchemistry-data:/var/lib/mysql
+
+networks:
+  sqlchemistry-net: {}
+
+volumes:
+  sqlchemistry-data: {}
