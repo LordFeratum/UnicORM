@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from sys import path
 from os.path import join, dirname, abspath
 
@@ -22,15 +24,16 @@ class User(Table):
 
 ss = Session(MySQLEngine(dsn="mysql+pymysql://a:b@host/db"))
 
+print()
 print(ss.create_table(User))
-
-q = ss.query(User)
+print('\n')
 
 
 user = User()
 user.jamones = 3
+query = ss.query(User)\
+          .where(User.paco == 6)\
+          .where(User.jamones == user.jamones)
 
-b = User.paco == user.jamones
-
-print('\n')
-print(b)
+pprint(query.get_raw_query())
+print()

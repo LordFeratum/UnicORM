@@ -50,7 +50,10 @@ class Column:
         return '<{}: {}>'.format(self.sql_type, self.get_value())
 
     def __eq__(self, obj):
-        return Equals(self._table, self._column_type, obj)
+        if isinstance(obj, Column):
+            obj = obj.get_value()
+
+        return Equals(self._table, self, obj)
 
 
 class Table:

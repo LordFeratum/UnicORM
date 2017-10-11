@@ -7,7 +7,10 @@ class BaseQuery:
         self._from = table.tablename()
         self._columns = columns or table.columns()
         self._conditions = []
+        self._parameters = {}
 
     def where(self, condition):
-        self._conditions.append(condition)
+        self._parameters.update(condition.get_parameter())
+        operation = condition.get_operation(self._engine)
+        self._conditions.append(operation)
         return self

@@ -7,6 +7,8 @@ from sqlchemistry.sql.backends.mysql import MySQLQuery
 
 
 class MySQLEngine(BaseEngine):
+    EQUALS = '='
+
     def __init__(self, *args, **kwargs):
         super(MySQLEngine, self).__init__(*args, **kwargs)
 
@@ -33,11 +35,15 @@ class MySQLEngine(BaseEngine):
         else:
             self._connection = await connect(**credentials)
 
+    def get_dbapi_identifier(self, identifier):
+        return '%({})s'.format(identifier)
+
     def get_query(self, table, columns=None):
         return MySQLQuery(self, table, columns=columns or table.columns())
 
     def create_table(self, table):
         def _process_column(column):
+            print(column)
             params = {
                 'name': column.name,
                 'type': column.sql_type,
