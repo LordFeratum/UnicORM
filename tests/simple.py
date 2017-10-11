@@ -1,15 +1,15 @@
 from pprint import pprint
 
 from sys import path
+from os import environ
 from os.path import join, dirname, abspath
-
-path.insert(0, join(dirname(abspath(__file__)), '..'))
-
 
 from sqlchemistry.session import Session
 from sqlchemistry.types import Int, Boolean, Float, String
 from sqlchemistry.sql.schema import Table, Column
 from sqlchemistry.engine.backends.mysql import MySQLEngine
+
+path.insert(0, join(dirname(abspath(__file__)), '..'))
 
 
 class User(Table):
@@ -23,6 +23,8 @@ class User(Table):
 
 
 ss = Session(MySQLEngine(dsn="mysql+pymysql://a:b@host/db"))
+
+print(environ.get("DB_DSN")
 
 print()
 print(ss.create_table(User))
