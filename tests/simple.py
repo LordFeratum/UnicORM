@@ -1,15 +1,17 @@
+from asyncio import get_event_loop
 from pprint import pprint
 
 from sys import path
-from os import environ
 from os.path import join, dirname, abspath
+path.insert(0, join(dirname(abspath(__file__)), '..'))
 
 from sqlchemistry.session import Session
 from sqlchemistry.types import Int, Boolean, Float, String
 from sqlchemistry.sql.schema import Table, Column
 from sqlchemistry.engine.backends.mysql import MySQLEngine
 
-path.insert(0, join(dirname(abspath(__file__)), '..'))
+
+loop = get_event_loop()
 
 
 class User(Table):
@@ -22,20 +24,12 @@ class User(Table):
     string = Column(String)
 
 
-ss = Session(MySQLEngine(dsn="mysql+pymysql://a:b@host/db"))
-
-print(environ.get("DB_DSN")
-
-print()
-print(ss.create_table(User))
-print('\n')
+async def main():
+    dsn = "mysql+pymysql://user:user@localhost/sqlchemistry"
+    ss = Session(MySQLEngine(dsn=dsn, loop=loop, use_pool=False))
+    await ss.connect()
+    # await ss.create_table(User, echo=True)
 
 
-user = User()
-user.jamones = 3
-query = ss.query(User)\
-          .where(User.paco == 6)\
-          .where(User.jamones == user.jamones)
-
-pprint(query.get_raw_query())
-print()
+if __name__ == '__main__':
+    loop.run_until_complete(main())

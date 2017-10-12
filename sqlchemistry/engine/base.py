@@ -28,6 +28,8 @@ class BaseEngine:
             self._pwd = pwd
             self._db = database
 
+        self._connection = None
+        self._pool = None
         self._use_pool = use_pool
         self._minsize = min_size
         self._maxsize = max_size

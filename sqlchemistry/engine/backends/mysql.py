@@ -10,19 +10,15 @@ class MySQLEngine(BaseEngine):
     EQUALS = '='
 
     def __init__(self, *args, **kwargs):
+        self._logger = logging.getLogger()
+        self._logger.setLevel(logging.DEBUG)
         super(MySQLEngine, self).__init__(*args, **kwargs)
-
-        self._connection = None
-        self._pool = None
-
-        self._logger = logging.getLogger("SQLChemistry.engine.mysql")
-        self._logger.setLevel(logging.WARNING)
 
     async def _connect(self):
         self._logger.debug('Connecting...')
         credentials = {
             'host': self._host,
-            'port': int(self._port),
+            'port': int(self._port or '3306'),
             'user': self._user,
             'password': self._pwd,
             'db': self._db,
@@ -41,9 +37,14 @@ class MySQLEngine(BaseEngine):
     def get_query(self, table, columns=None):
         return MySQLQuery(self, table, columns=columns or table.columns())
 
-    def create_table(self, table):
+    async def execute(self, query, params, echo=False):
+        async with self._connection.cursor() as cur:
+            if echo:
+                print(cur.mogrify(query, params))
+            return await cur.execute(query, params)
+
+    async def create_table(self, table, echo):
         def _process_column(column):
-            print(column)
             params = {
                 'name': column.name,
                 'type': column.sql_type,
@@ -53,8 +54,9 @@ class MySQLEngine(BaseEngine):
             }
             return '\t{name} {type}{nullable}{inc}{pk}'.format(**params)
 
+        table._init_columns()
         columns = ',\n'.join(_process_column(c) for c in table.columns())
         corpus = "CREATE TABLE {tablename} (\n{columns}\n);"\
                  .format(tablename=table.tablename(), columns=columns)
 
-        return corpus
+        return await self.execute(corpus, None, echo=echo)

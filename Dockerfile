@@ -13,6 +13,8 @@ RUN apk --no-cache add \
       gcc
 
 COPY requirements*.txt /opt/
+COPY sqlchemistry/* /opt/
+COPY tests/* /opt/
 
 ARG INCLUDE_TEST=0
 RUN REQUERIMENTS_FILE="requirements.txt"; \
