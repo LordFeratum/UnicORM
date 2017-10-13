@@ -29,6 +29,10 @@ async def main():
     ss = Session(MySQLEngine(dsn=dsn, loop=loop, use_pool=False))
     await ss.connect()
     # await ss.create_table(User, echo=True)
+    user = User(paco='Paco', jamones='Jamones',
+                salsicha='Salsicha', string='String')
+
+    await ss.insert(user)
 
 
 if __name__ == '__main__':

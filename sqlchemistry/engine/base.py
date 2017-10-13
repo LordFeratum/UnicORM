@@ -44,3 +44,6 @@ class BaseEngine:
                           user=self._user, pwd=self._pwd)
             msg = "Could not connect to {user}:{pwd}@{host}:{port}/{db}"
             raise ConnectionError(msg.format(**params)) from e
+
+    async def insert(self, entity):
+        pass

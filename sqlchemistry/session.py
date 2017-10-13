@@ -13,3 +13,6 @@ class Session:
 
     async def create_table(self, table, echo=False):
         await self._engine.create_table(table, echo)
+
+    async def insert(self, entity):
+        return await self._engine.insert(entity)

@@ -60,3 +60,7 @@ class MySQLEngine(BaseEngine):
                  .format(tablename=table.tablename(), columns=columns)
 
         return await self.execute(corpus, None, echo=echo)
+
+    async def insert(self, entity):
+        for column in entity.columns():
+            print(column.name, '----', column.get_value())

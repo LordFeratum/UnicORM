@@ -57,16 +57,17 @@ class Column:
 
 
 class Table:
-    def __new__(cls):
-        cls._init_columns()
+    def __new__(cls, **kwargs):
+        cls._init_columns(kwargs)
         return super(Table, cls).__new__(cls)
 
     @classmethod
-    def _init_columns(cls):
+    def _init_columns(cls, values):
         for name, column in cls.__dict__.items():
             if isinstance(column, Column):
-                column.set_name(name)
                 column.set_table(cls)
+                column.set_name(name)
+                column.set_value(values.get(name))
 
     @classmethod
     def tablename(cls):
