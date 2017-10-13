@@ -1,5 +1,4 @@
 from asyncio import get_event_loop
-from pprint import pprint
 
 from sys import path
 from os.path import join, dirname, abspath
@@ -28,8 +27,10 @@ async def main():
     dsn = "mysql+pymysql://user:user@localhost/sqlchemistry"
     ss = Session(MySQLEngine(dsn=dsn, loop=loop, use_pool=False))
     await ss.connect()
-    # await ss.create_table(User, echo=True)
+    await ss.create_table_if_not_exists(User, echo=True)
     user = User(paco=1, jamones=2.0, salsicha=True, string='String')
+
+    print(user)
 
     await ss.insert(user)
     await ss.commit()

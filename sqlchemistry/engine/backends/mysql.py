@@ -47,7 +47,7 @@ class MySQLEngine(BaseEngine):
             await cur.execute(query, params)
             return cur.lastrowid
 
-    async def create_table(self, table, echo):
+    async def create_table(self, table, check_exists, echo):
         def _process_column(column):
             params = {
                 'name': column.name,
@@ -58,10 +58,13 @@ class MySQLEngine(BaseEngine):
             }
             return '\t{name} {type}{nullable}{inc}{pk}'.format(**params)
 
+        exists = '' if not check_exists else 'IF NOT EXISTS'
         table._init_columns({})
         columns = ',\n'.join(_process_column(c) for c in table.columns())
-        corpus = "CREATE TABLE {tablename} (\n{columns}\n);"\
-                 .format(tablename=table.tablename(), columns=columns)
+        corpus = "CREATE TABLE {exists} {tablename} (\n{columns}\n);"\
+                 .format(tablename=table.tablename(),
+                         columns=columns,
+                         exists=exists)
 
         return await self.execute(corpus, None, echo=echo)
 

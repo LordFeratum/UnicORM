@@ -15,7 +15,10 @@ class Session:
         return await self._engine.execute(query, params, echo)
 
     async def create_table(self, table, echo=False):
-        await self._engine.create_table(table, echo)
+        await self._engine.create_table(table, False, echo)
+
+    async def create_table_if_not_exists(self, table, echo=False):
+        await self._engine.create_table(table, True, echo)
 
     async def insert(self, entity):
         return await self._engine.insert(entity)
