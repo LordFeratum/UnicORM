@@ -84,7 +84,11 @@ class Table:
                 if ctype.is_primary_key()]
 
     def __setattr__(self, column, value):
-        Table._init_columns()
+        Table._init_columns({column: value})
         for attr, ctype in self.__class__.__dict__.items():
             if isinstance(ctype, Column) and attr == column:
                 ctype.set_value(value)
+
+    def __repr__(self):
+        c = ', '.join(f'{c.name}: {c.get_value()}' for c in self.columns())
+        return f"<{self.__class__.__name__} {c}>"

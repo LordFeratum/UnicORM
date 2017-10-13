@@ -8,6 +8,9 @@ class Session:
     def query(self, table, columns=None):
         return self._engine.get_query(table, columns=columns)
 
+    async def commit(self):
+        await self._engine.commit()
+
     async def execute(self, query, params=None, echo=False):
         return await self._engine.execute(query, params, echo)
 
