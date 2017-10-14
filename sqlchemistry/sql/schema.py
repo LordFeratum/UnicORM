@@ -1,5 +1,5 @@
 from sqlchemistry.types import AbstractType
-from sqlchemistry.sql.operands import Equals, Or, And
+from sqlchemistry.sql.operands import Equals
 
 
 class Column:
@@ -54,18 +54,6 @@ class Column:
             obj = obj.get_value()
 
         return Equals(self._table, self, obj)
-
-    def __and__(self, obj):
-        if isistance(obj, Column):
-            obj = obj.get_value()
-
-        return And(self._table, self, obj)
-
-    def __or__(self, obj):
-        if isinstance(obj, Column):
-            obj = obj.get_value()
-
-        return Or(self._table, self, obj)
 
 
 class Table:

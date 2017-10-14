@@ -2,6 +2,8 @@ from asyncio import get_event_loop
 
 from sys import path
 from os.path import join, dirname, abspath
+from operator import and_, or_
+
 path.insert(0, join(dirname(abspath(__file__)), '..'))
 
 from sqlchemistry.session import Session
@@ -30,7 +32,8 @@ async def main():
     await ss.create_table_if_not_exists(User, echo=True)
 
     query = ss.query(User)\
-              .where(User.paco == 12.2)\
+              .where(and_(User.paco == 12.2, or_(User.salsicha == True,
+                                                 User.jamones == 23.2)))\
               .limit(3)
 
     print(query)

@@ -20,6 +20,41 @@ class Operation:
                        column=self._column.name,
                        identifier=self._id)
 
+    def __and__(self, obj):
+        return And(self, obj)
+
+    def __or__(self, obj):
+        return Or(self, obj)
+
+
+class FilterOperation:
+    def __init__(self, operation_a, operation_b):
+        self._operation_a = operation_a
+        self._operation_b = operation_b
+
+    def _get_parameters(self):
+        operations = {}
+        for op in [self._operation_a, self._operation_b]:
+            if isinstance(op, Operation):
+                operations.update(op.get_parameter())
+
+            elif isinstance(op, FilterOperation):
+                operations.update(op._get_parameters())
+
+            else:
+                raise TypeError("Invalid type of operation.")
+
+        return operations
+
+    def get_parameter(self):
+        return self._get_parameters()
+
+    def get_operation_a(self, engine):
+        return self._operation_a.get_operation(engine)
+
+    def get_operation_b(self, engine):
+        return self._operation_b.get_operation(engine)
+
 
 class Equals(Operation):
     def get_operation(self, engine):
@@ -32,11 +67,17 @@ class Equals(Operation):
         return '{tablename}.`{column}` {operand} {id}'.format(**params)
 
 
-class And(Operation):
+class And(FilterOperation):
     def get_operation(self, engine):
-        pass
+        op_a = self.get_operation_a(engine)
+        op_b = self.get_operation_b(engine)
+        operand = engine.AND
+        return f'({op_a} {operand} {op_b})'
 
 
-class Or(Operation):
+class Or(FilterOperation):
     def get_operation(self, engine):
-        pass
+        op_a = self.get_operation_a(engine)
+        op_b = self.get_operation_b(engine)
+        operand = engine.OR
+        return f'({op_a} {operand} {op_b})'

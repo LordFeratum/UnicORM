@@ -8,6 +8,8 @@ from sqlchemistry.sql.backends.mysql import MySQLQuery
 
 class MySQLEngine(BaseEngine):
     EQUALS = '='
+    AND = 'AND'
+    OR = 'OR'
 
     def __init__(self, *args, **kwargs):
         self._logger = logging.getLogger()
