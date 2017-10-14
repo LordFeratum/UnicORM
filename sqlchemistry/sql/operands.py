@@ -30,3 +30,13 @@ class Equals(Operation):
             'id': engine.get_dbapi_identifier(self._get_identifier())
         }
         return '{tablename}.`{column}` {operand} {id}'.format(**params)
+
+
+class And(Operation):
+    def get_operation(self, engine):
+        pass
+
+
+class Or(Operation):
+    def get_operation(self, engine):
+        pass

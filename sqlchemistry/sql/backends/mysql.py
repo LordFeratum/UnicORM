@@ -14,9 +14,20 @@ class MySQLQuery(BaseQuery):
 
     def _apply_wheres(self):
         conditions = '\nAND '.join(self._conditions)
-        return 'WHERE {}'.format(conditions)
+        return 'WHERE ({})'.format(conditions)
+
+    def _apply_limit(self):
+        if not self._limit:
+            return ''
+
+        return f'LIMIT %(limit_parameter)s'
 
     def get_raw_query(self):
         sql = self._apply_select()
         wheres = self._apply_wheres()
-        return ['{}\n{}'.format(sql, wheres), self._parameters]
+        limit = self._apply_limit()
+        return [f'{sql}\n{wheres}\n{limit}', self._parameters]
+
+    def __repr__(self):
+        query, params = self.get_raw_query()
+        return f'<Query query: {query}, params={params}>'
