@@ -90,3 +90,9 @@ class MySQLEngine(BaseEngine):
                f'VALUES {values} ')
         last_row_id = await self.execute(sql, params)
         setattr(entity, primary_key, last_row_id)
+
+    async def fetchone(self, table, query, params):
+        pass
+
+    async def fetchall(self, table, query, params):
+        pass

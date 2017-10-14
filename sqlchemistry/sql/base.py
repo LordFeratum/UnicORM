@@ -3,12 +3,16 @@ class BaseQuery:
         if not isinstance(columns, list):
             raise TypeError("columns must be a list")
 
+        self._table = table
         self._engine = engine
         self._from = table.tablename()
         self._columns = columns or table.columns()
         self._conditions = []
         self._parameters = {}
         self._limit = False
+
+    def get_raw_query(self):
+        pass
 
     def where(self, condition):
         self._parameters.update(condition.get_parameter())
@@ -23,3 +27,11 @@ class BaseQuery:
         self._limit = True
         self._parameters.update({'limit_parameter': limit})
         return self
+
+    async def one(self):
+        query, params = self.get_raw_query()
+        return await self._engine.fetchone(self._table, query, params)
+
+    async def all(self):
+        query, params = self.get_raw_query()
+        return await self._engine.fetchall(self._table, query, params)
