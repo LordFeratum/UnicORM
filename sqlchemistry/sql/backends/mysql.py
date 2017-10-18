@@ -13,8 +13,11 @@ class MySQLQuery(BaseQuery):
                                                       table=self._from)
 
     def _apply_wheres(self):
-        conditions = '\nAND '.join(self._conditions)
-        return 'WHERE ({})'.format(conditions)
+        if self._conditions:
+            conditions = '\nAND '.join(self._conditions)
+            return 'WHERE ({})'.format(conditions)
+
+        return ''
 
     def _apply_limit(self):
         if not self._limit:
@@ -26,8 +29,4 @@ class MySQLQuery(BaseQuery):
         sql = self._apply_select()
         wheres = self._apply_wheres()
         limit = self._apply_limit()
-        return [f'{sql}\n{wheres}\n{limit}', self._parameters]
-
-    def __repr__(self):
-        query, params = self.get_raw_query()
-        return f'<Query query: {query}, params={params}>'
+        return [f'{sql} {wheres} {limit}', self._parameters]

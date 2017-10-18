@@ -31,12 +31,22 @@ async def main():
     await ss.connect()
     await ss.create_table_if_not_exists(User, echo=True)
 
-    query = ss.query(User)\
-              .where(and_(User.paco == 12.2, or_(User.salsicha == True,
-                                                 User.jamones == 23.2)))\
-              .limit(3)
-
+    query = ss.query(User)
     print(query)
+
+    users = await query.all()
+    print(users)
+
+    for user in users:
+        print(user)
+
+    print("****")
+    us1 = users[0]
+    print(us1)
+
+    print("****")
+    us2 = users[2]
+    print(us2)
 
 
 if __name__ == '__main__':

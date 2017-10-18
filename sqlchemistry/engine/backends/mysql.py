@@ -1,9 +1,11 @@
 import logging
 
-from aiomysql import create_pool, connect
+from aiomysql import create_pool, connect, DictCursor
 
 from sqlchemistry.engine.base import BaseEngine
+from sqlchemistry.sql.base import ResultQuery
 from sqlchemistry.sql.backends.mysql import MySQLQuery
+
 
 
 class MySQLEngine(BaseEngine):
@@ -92,7 +94,14 @@ class MySQLEngine(BaseEngine):
         setattr(entity, primary_key, last_row_id)
 
     async def fetchone(self, table, query, params):
-        pass
+        async with self._connection.cursor(DictCursor) as cur:
+            await cur.execute(query, params)
+            res = await cur.fetchone()
+            return table(**res)
+
 
     async def fetchall(self, table, query, params):
-        pass
+        async with self._connection.cursor(DictCursor) as cur:
+            await cur.execute(query, params)
+            res = await cur.fetchall()
+            return ResultQuery(table, res)
