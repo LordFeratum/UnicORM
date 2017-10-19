@@ -31,6 +31,15 @@ async def main():
     await ss.connect()
     await ss.create_table_if_not_exists(User, echo=True)
 
+    test = User(paco=6.0, jamones=6.0, salsicha=False, string="TEST")
+    print(test)
+
+    await ss.insert(test)
+    await ss.commit()
+
+    print(test)
+
+
     query = ss.query(User)
     print(query)
 
@@ -45,9 +54,13 @@ async def main():
     for user in users:
         print(user)
 
+
     print("**********************************")
 
-    print(users[2])
+    query2 = ss.query(User).where(User.string == "TEST")
+    print(query2)
+    test_query2 = await query2.one()
+    print(test_query2)
 
 
 if __name__ == '__main__':
