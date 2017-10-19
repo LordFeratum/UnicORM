@@ -93,7 +93,11 @@ class Table:
             if isinstance(column, Column):
                 column.set_table(cls)
                 column.set_name(name)
-                column.set_value(values.get(name))
+                value = values.get(name)
+                if isinstance(value, Column):
+                    value = value.get_value()
+
+                column.set_value(value)
 
     @classmethod
     def tablename(cls):

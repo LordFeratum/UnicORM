@@ -43,17 +43,15 @@ async def main():
     await ss.create_table_if_not_exists(Resume, echo=True)
 
     user = User(paco=1.0, jamones=2.3, salsicha=True, string="Miquel")
-    print(user)
     await ss.insert(user)
-    print(user)
+    resume = Resume(title="Resume of Miquel!", user_id=user.id)
+    await ss.insert(resume)
 
-    query = ss.query(User).where(User.string == 'Miquel')
-    miquels = await query.all()
+    query = ss.query(User)\
+              .inner_join(Resume, on=User.id == Resume.user_id)\
+              .where(Resume.title == 'Resume of Miquelasd!')
 
-    print("*********")
-
-    for miquel in miquels:
-        print(miquel)
+    miquel = await query.one()
 
 
 if __name__ == '__main__':

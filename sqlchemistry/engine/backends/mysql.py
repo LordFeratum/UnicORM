@@ -2,10 +2,10 @@ import logging
 
 from aiomysql import create_pool, connect, DictCursor
 
+from sqlchemistry.exceptions import NoRowFoundError
 from sqlchemistry.engine.base import BaseEngine
 from sqlchemistry.sql.base import ResultQuery
 from sqlchemistry.sql.backends.mysql import MySQLQuery
-
 
 
 class MySQLEngine(BaseEngine):
@@ -116,8 +116,10 @@ class MySQLEngine(BaseEngine):
         async with self._connection.cursor(DictCursor) as cur:
             await cur.execute(query, params)
             res = await cur.fetchone()
-            return table(**res)
+            if res is None:
+                raise NoRowFoundError
 
+            return table(**res)
 
     async def fetchall(self, table, query, params):
         async with self._connection.cursor(DictCursor) as cur:
