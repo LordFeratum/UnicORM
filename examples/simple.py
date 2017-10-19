@@ -7,7 +7,7 @@ from operator import and_, or_
 path.insert(0, join(dirname(abspath(__file__)), '..'))
 
 from sqlchemistry.session import Session
-from sqlchemistry.types import Int, Boolean, Float, String
+from sqlchemistry.types import Int, Boolean, Float, String, ForeignKey
 from sqlchemistry.sql.schema import Table, Column
 from sqlchemistry.engine.backends.mysql import MySQLEngine
 
@@ -25,50 +25,26 @@ class User(Table):
     string = Column(String)
 
 
+class Resume(Table):
+    __tablename__ = 'resumes'
+
+    id = Column(Int, primary_key=True, autoincrement=True)
+    title = Column(String)
+
+    user_id = Column(Int, ForeignKey(User.id))
+
+
 async def main():
     dsn = "mysql+pymysql://user:user@localhost/sqlchemistry"
     ss = Session(MySQLEngine(dsn=dsn, loop=loop,
                              use_pool=False, autocommit=True))
     await ss.connect()
     await ss.create_table_if_not_exists(User, echo=True)
-
-    test = User(paco=6.0, jamones=6.0, salsicha=False, string="TEST")
-    test = User(paco=6.0, jamones=6.0, salsicha=False, string="TEST2")
-    print(test)
-
-    await ss.insert(test)
-    print(test)
-
-    query = ss.query(User)
-    print(query)
-
-    users = await query.all()
-    print(users)
-
-    for user in users:
-        print(user)
-
-    print("**********************************")
-
-    for user in users:
-        print(user)
-
-    print("**********************************")
-
-    query2 = ss.query(User).where(User.string == "TEST")
-    print(query2)
-    test_query2 = await query2.one()
-    print(test_query2)
+    await ss.create_table_if_not_exists(Resume, echo=True)
 
 
-    print("**********************************")
-    query3 = ss.query(User).where(or_(User.string == "TEST",
-                                      User.string == "TEST2"))
-    print(query3)
-    test_query3 = await query3.all()
-
-    for user in test_query3:
-        print(user)
+    for column in Resume.columns():
+        print(column)
 
 
 if __name__ == '__main__':

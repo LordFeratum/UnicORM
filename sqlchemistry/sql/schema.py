@@ -1,9 +1,9 @@
-from sqlchemistry.types import AbstractType
+from sqlchemistry.types import AbstractType, ForeignKey
 from sqlchemistry.sql.operands import Equals
 
 
 class Column:
-    def __init__(self, column_type, **kwargs):
+    def __init__(self, column_type, *args, **kwargs):
         if isinstance(column_type, AbstractType):
             self._column_type = column_type
         else:
@@ -11,7 +11,18 @@ class Column:
 
         self._table = None
         self._name = kwargs.get('name')
+        self._args = args
         self._kwargs = kwargs
+
+    def is_foreign_key(self):
+        return any(isinstance(arg, ForeignKey) for arg in self._args)
+
+    def get_foreign_key(self):
+        for arg in self._args:
+            if isinstance(arg, ForeignKey):
+                return arg.parent_column
+
+        return None
 
     def is_primary_key(self):
         return self._kwargs.get('primary_key', False)
@@ -42,9 +53,16 @@ class Column:
     def get_value(self):
         return self._column_type.value
 
+    def get_table(self):
+        return self._table
+
     @property
     def name(self):
         return self._name
+
+    @property
+    def tablename(self):
+        return self._table.tablename()
 
     def __repr__(self):
         return '<{}: {}>'.format(self.sql_type, self.get_value())

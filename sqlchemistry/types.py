@@ -19,6 +19,15 @@ class AbstractType:
         self._value = value
 
 
+class ForeignKey:
+    def __init__(self, column):
+        self._column = column
+
+    @property
+    def parent_column(self):
+        return self._column
+
+
 class Int(AbstractType):
     def sql_type(self):
         return 'INTEGER'

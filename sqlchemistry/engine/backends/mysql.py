@@ -63,13 +63,30 @@ class MySQLEngine(BaseEngine):
             }
             return '\t{name} {type}{nullable}{inc}{pk}'.format(**params)
 
+        def _process_foreign_key(column):
+            foreign = column.get_foreign_key()
+            return (
+                f"\tFOREIGN KEY ({column.name})\n"
+                f"\tREFERENCES {foreign.tablename}({foreign.name})"
+            )
+
         exists = '' if not check_exists else 'IF NOT EXISTS'
         table._init_columns({})
         columns = ',\n'.join(_process_column(c) for c in table.columns())
-        corpus = "CREATE TABLE {exists} {tablename} (\n{columns}\n);"\
-                 .format(tablename=table.tablename(),
-                         columns=columns,
-                         exists=exists)
+        foreign_keys = ',\n'.join(
+            _process_foreign_key(c) for c in table.columns()
+            if c.is_foreign_key()
+        )
+
+        if foreign_keys:
+            columns += ',\n'
+
+        corpus = (
+            f"CREATE TABLE {exists} {table.tablename()} (\n"
+            f"{columns} \n"
+            f"{foreign_keys}\n"
+             ");"
+        )
 
         return await self.execute(corpus, None, echo=echo)
 
