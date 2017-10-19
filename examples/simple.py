@@ -27,18 +27,17 @@ class User(Table):
 
 async def main():
     dsn = "mysql+pymysql://user:user@localhost/sqlchemistry"
-    ss = Session(MySQLEngine(dsn=dsn, loop=loop, use_pool=False))
+    ss = Session(MySQLEngine(dsn=dsn, loop=loop,
+                             use_pool=False, autocommit=True))
     await ss.connect()
     await ss.create_table_if_not_exists(User, echo=True)
 
     test = User(paco=6.0, jamones=6.0, salsicha=False, string="TEST")
+    test = User(paco=6.0, jamones=6.0, salsicha=False, string="TEST2")
     print(test)
 
     await ss.insert(test)
-    await ss.commit()
-
     print(test)
-
 
     query = ss.query(User)
     print(query)
@@ -54,13 +53,22 @@ async def main():
     for user in users:
         print(user)
 
-
     print("**********************************")
 
     query2 = ss.query(User).where(User.string == "TEST")
     print(query2)
     test_query2 = await query2.one()
     print(test_query2)
+
+
+    print("**********************************")
+    query3 = ss.query(User).where(or_(User.string == "TEST",
+                                      User.string == "TEST2"))
+    print(query3)
+    test_query3 = await query3.all()
+
+    for user in test_query3:
+        print(user)
 
 
 if __name__ == '__main__':

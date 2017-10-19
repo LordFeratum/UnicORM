@@ -26,6 +26,7 @@ class MySQLEngine(BaseEngine):
             'user': self._user,
             'password': self._pwd,
             'db': self._db,
+            'autocommit': self._autocommit,
             'loop': self._loop
         }
 
