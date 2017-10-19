@@ -40,13 +40,14 @@ async def main():
     for user in users:
         print(user)
 
-    print("****")
-    us1 = users[0]
-    print(us1)
+    print("**********************************")
 
-    print("****")
-    us2 = users[2]
-    print(us2)
+    for user in users:
+        print(user)
+
+    print("**********************************")
+
+    print(users[2])
 
 
 if __name__ == '__main__':

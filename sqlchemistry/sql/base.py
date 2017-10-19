@@ -45,18 +45,13 @@ class ResultQuery:
     def __init__(self, table, results):
         self._table = table
         self._results = results
-        self._cached_results = {}
 
     def __iter__(self):
-        for pos, result in enumerate(self._results):
-            obj = self._table(**result)
-            self._cached_results[pos] = obj
-            yield obj
+        for elem in self._results:
+            yield self._table(**elem)
 
     def __getitem__(self, idx):
-        if idx in self._cached_results:
-            return self._cached_results[idx]
+        return self._table(**self._results[idx])
 
-        obj = self._table(**self._results[idx])
-        self._cached_results[idx] = obj
-        return obj
+    def __len__(self):
+        return len(self._results)
