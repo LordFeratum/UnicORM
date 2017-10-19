@@ -3,9 +3,9 @@ A simple python 3.6+ asynchronous data mapper ORM.
 
 This ORM intends to provide the simpliest API to interact with your database.
 
-##Examples
+## Examples
 
-###Model definition
+### Model definition
 ```
 from sqlchemistry.types import Int, String
 from sqlchemistry.sql.schema import Table, Column
@@ -18,7 +18,7 @@ class User(Table):
     email = Column(String)
 ```
 
-###Create database
+### Create database
 ```
 from sqlchemistry.session import Session
 from sqlchemistry.engine.backends.mysql import MySQLEngine
@@ -28,7 +28,7 @@ await session.connect()
 await session.create_table_if_not_exists(User)
 ```
 
-###Insert new element
+### Insert new element
 ```
 user = User(username="Patri", email="pgonzest@email.com")
 await session.insert(user)
@@ -37,7 +37,7 @@ await session.insert(user)
 # await session.commit()
 ```
 
-###Querying
+### Querying
 ```
 from operator import and_
 
@@ -49,7 +49,7 @@ patri = await query.one()
 patris = await query.all()
 ```
 
-##TODO
+## TODO
 - Implement all types (Actually only support: Int, String, Float and Boolean)
 - Implement pool of connections
 - Implement relationships
