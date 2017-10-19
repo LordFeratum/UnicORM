@@ -10,6 +10,7 @@ from sqlchemistry.sql.backends.mysql import MySQLQuery
 
 class MySQLEngine(BaseEngine):
     EQUALS = '='
+    IS = 'IS'
     AND = 'AND'
     OR = 'OR'
 

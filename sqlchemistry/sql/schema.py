@@ -1,5 +1,5 @@
 from sqlchemistry.types import AbstractType, ForeignKey
-from sqlchemistry.sql.operands import Equals
+from sqlchemistry.sql.operands import Equals, Is
 
 
 class Column:
@@ -68,10 +68,18 @@ class Column:
         return '<{}: {}>'.format(self.sql_type, self.get_value())
 
     def __eq__(self, obj):
+        value = obj
         if isinstance(obj, Column):
-            obj = obj.get_value()
+            value = obj.get_value()
 
-        return Equals(self._table, self, obj)
+        return Equals(self._table, self, value, obj)
+
+    def is_(self, obj):
+        value = obj
+        if isinstance(obj, Column):
+            value = obj.get_value()
+
+        return Is(self._table, self, value, obj)
 
 
 class Table:

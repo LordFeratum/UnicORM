@@ -25,8 +25,25 @@ class MySQLQuery(BaseQuery):
 
         return f'LIMIT %(limit_parameter)s'
 
+    def _apply_joins(self):
+        sql = ''
+
+        joins = [
+            ('inner', 'INNER JOIN'),
+            ('left', 'LEFT JOIN'),
+            ('right', 'RIGHT JOIN')
+        ]
+
+        for join_type, join_sql in joins:
+            for table, stmt_on in self._joins[join_type]:
+                stmt_on = f'ON {stmt_on}' if stmt_on is not None else ''
+                sql += f'{join_sql} {table.tablename()} {stmt_on} '
+
+        return sql
+
     def get_raw_query(self):
         sql = self._apply_select()
+        joins = self._apply_joins()
         wheres = self._apply_wheres()
         limit = self._apply_limit()
-        return [f'{sql} {wheres} {limit}', self._parameters]
+        return [f'{sql} {joins} {wheres} {limit}', self._parameters]

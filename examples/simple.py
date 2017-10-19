@@ -42,9 +42,18 @@ async def main():
     await ss.create_table_if_not_exists(User, echo=True)
     await ss.create_table_if_not_exists(Resume, echo=True)
 
+    user = User(paco=1.0, jamones=2.3, salsicha=True, string="Miquel")
+    print(user)
+    await ss.insert(user)
+    print(user)
 
-    for column in Resume.columns():
-        print(column)
+    query = ss.query(User).where(User.string == 'Miquel')
+    miquels = await query.all()
+
+    print("*********")
+
+    for miquel in miquels:
+        print(miquel)
 
 
 if __name__ == '__main__':

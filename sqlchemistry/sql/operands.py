@@ -5,11 +5,12 @@ class Operation:
         Operation._identifier += 1
         return super(Operation, cls).__new__(cls)
 
-    def __init__(self, table, column, value):
+    def __init__(self, table, column, value, right_column):
         self._id = Operation._identifier
         self._table = table
         self._column = column
         self._value = value
+        self._right_column = right_column
 
     def get_parameter(self):
         return {self._get_identifier(): self._value}
@@ -55,6 +56,12 @@ class FilterOperation:
     def get_operation_b(self, engine):
         return self._operation_b.get_operation(engine)
 
+    def get_unproccesed_operation_a(self, engine):
+        return self._operation_a.get_unproccesed_operation(engine)
+
+    def get_unproccesed_operation_b(self, engine):
+        return self._operation_b.get_unproccesed_operation(engine)
+
 
 class Equals(Operation):
     def get_operation(self, engine):
@@ -66,6 +73,31 @@ class Equals(Operation):
         }
         return '{tablename}.`{column}` {operand} {id}'.format(**params)
 
+    def get_unproccesed_operation(self, engine):
+        tablename = self._table.tablename()
+        column = self._column.name
+        operand = engine.EQUALS
+        ntablename = self._right_column.tablename
+        ncolumn = self._right_column.name
+        return f'{tablename}.`{column}` {operand} {ntablename}.`{ncolumn}`'
+
+
+class Is(Operation):
+    def get_operation(self, engine):
+        tablename = self._table.tablename()
+        column = self._column.name
+        operand = engine.IS
+        _id = engine.get_dbapi_identifier(self._get_identifier())
+        return f'{tablename}.`{column}` {operand} {_id}'
+
+    def get_unproccesed_operation(self, engine):
+        tablename = self._table.tablename()
+        column = self._column.name
+        operand = engine.IS
+        ntablename = self._right_column.tablename
+        ncolumn = self._right_column.name
+        return f'{tablename}.`{column}` {operand} {ntablename}.`{ncolumn}`'
+
 
 class And(FilterOperation):
     def get_operation(self, engine):
@@ -74,6 +106,12 @@ class And(FilterOperation):
         operand = engine.AND
         return f'({op_a} {operand} {op_b})'
 
+    def get_unproccesed_operation(self, engine):
+        op_a = self.get_unproccesed_operation_a(engine)
+        op_b = self.get_unproccesed_operation_b(engine)
+        operand = engine.AND
+        return f'{op_a} {operand} {op_b}'
+
 
 class Or(FilterOperation):
     def get_operation(self, engine):
@@ -81,3 +119,9 @@ class Or(FilterOperation):
         op_b = self.get_operation_b(engine)
         operand = engine.OR
         return f'({op_a} {operand} {op_b})'
+
+    def get_unproccesed_operation(self, engine):
+        op_a = self.get_unproccesed_operation_a(engine)
+        op_b = self.get_unproccesed_operation_b(engine)
+        operand = engine.OR
+        return f'{op_a} {operand} {op_b}'

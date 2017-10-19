@@ -10,6 +10,11 @@ class BaseQuery:
         self._conditions = []
         self._parameters = {}
         self._limit = False
+        self._joins = {
+            'inner': [],
+            'left': [],
+            'right': []
+        }
 
     def get_raw_query(self):
         pass
@@ -28,6 +33,27 @@ class BaseQuery:
         self._parameters.update({'limit_parameter': limit})
         return self
 
+    def inner_join(self, table, on=None):
+        if on is not None:
+            on = on.get_unproccesed_operation(self._engine)
+
+        self._joins['inner'].append((table, on))
+        return self
+
+    def left_join(self, table, on=None):
+        if on is not None:
+            on = on.get_unproccesed_operation(self._engine)
+
+        self._joins['left'].append((table, on))
+        return self
+
+    def right_join(self, table, on=None):
+        if on is not None:
+            on = on.get_unproccesed_operation(self._engine)
+
+        self._joins['right'].append((table, on))
+        return self
+
     async def one(self):
         query, params = self.get_raw_query()
         return await self._engine.fetchone(self._table, query, params)
@@ -38,7 +64,7 @@ class BaseQuery:
 
     def __repr__(self):
         query, params = self.get_raw_query()
-        return f'<Query query: {query}, params={params}>'
+        return f'<Query {query}, params={params}>'
 
 
 class ResultQuery:
