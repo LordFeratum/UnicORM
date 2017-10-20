@@ -66,7 +66,7 @@ class MySQLEngine(BaseEngine):
     async def execute(self, query, params, echo=False):
         conn = await self._get_connection()
         async with conn.cursor() as cur:
-            if echo:
+            if echo or self._echo:
                 print(cur.mogrify(query, params))
 
             await cur.execute(query, params)
@@ -137,6 +137,9 @@ class MySQLEngine(BaseEngine):
         conn = await self._get_connection()
         async with conn.cursor() as cur:
             await cur.execute(query, params)
+            if self._echo:
+                print(cur.mogrify(query, params))
+
             res = await cur.fetchone()
             if res is None:
                 raise NoRowFoundError
@@ -148,6 +151,9 @@ class MySQLEngine(BaseEngine):
         conn = await self._get_connection()
         async with conn.cursor() as cur:
             await cur.execute(query, params)
+            if self._echo:
+                print(cur.mogrify(query, params))
+
             res = await cur.fetchall()
 
         self._close_connection(conn)

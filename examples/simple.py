@@ -36,11 +36,11 @@ class Resume(Table):
 
 async def main():
     dsn = "mysql+pymysql://user:user@localhost/sqlchemistry"
-    ss = Session(MySQLEngine(dsn=dsn, loop=loop,
-                             use_pool=True, autocommit=True))
+    ss = Session(MySQLEngine(dsn=dsn, loop=loop, use_pool=True,
+                             autocommit=True, echo=True))
     await ss.connect()
-    await ss.create_table_if_not_exists(User, echo=True)
-    await ss.create_table_if_not_exists(Resume, echo=True)
+    await ss.create_table_if_not_exists(User)
+    await ss.create_table_if_not_exists(Resume)
 
     user = User(paco=1.0, jamones=2.3, salsicha=True, string="Miquel")
     await ss.insert(user)
@@ -48,7 +48,7 @@ async def main():
     await ss.insert(resume)
 
     query = ss.query(User)\
-              .inner_join(Resume, on=User.id == Resume.user_id)\
+              .left_join(Resume, on=User.id == Resume.user_id)\
               .where(Resume.title == 'Resume of Miquel!')
 
     miquel = await query.one()

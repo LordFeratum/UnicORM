@@ -1,6 +1,3 @@
-from datetime import datetime
-
-
 class AbstractType:
     def __init__(self, *args, **kwargs):
         self._value = None
@@ -60,18 +57,10 @@ class Boolean(AbstractType):
 
 
 class DateTime(AbstractType):
-    def sql_cast(self, value):
-        date_format = '%Y-%m-%d %H:%M:%S'
-        return datetime.strptime(value, date_format)
-
     def sql_type(self):
         return 'DATETIME'
 
 
 class Date(AbstractType):
-    def sql_cast(self, value):
-        date_format = '%Y-%m-%d'
-        return datetime.strptime(value, date_format).date()
-
     def sql_type(self):
         return 'DATE'
