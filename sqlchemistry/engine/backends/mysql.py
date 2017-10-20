@@ -28,10 +28,16 @@ class MySQLEngine(BaseEngine):
             'password': self._pwd,
             'db': self._db,
             'autocommit': self._autocommit,
+            'cursorclass': DictCursor,
+            'echo': self._echo,
             'loop': self._loop
         }
 
         if self._use_pool:
+            credentials.update({
+                'minsize': self._minsize,
+                'maxsize': self._maxsize
+            })
             self._pool = await create_pool(**credentials)
 
         else:
@@ -46,12 +52,27 @@ class MySQLEngine(BaseEngine):
     async def commit(self):
         await self._connection.commit()
 
+    async def _get_connection(self):
+        if self._use_pool:
+            conn = await self._pool.acquire()
+            return conn
+
+        return self._connection
+
+    def _close_connection(self, connection):
+        if self._use_pool:
+            self._pool.release(connection)
+
     async def execute(self, query, params, echo=False):
-        async with self._connection.cursor() as cur:
+        conn = await self._get_connection()
+        async with conn.cursor() as cur:
             if echo:
                 print(cur.mogrify(query, params))
+
             await cur.execute(query, params)
             return cur.lastrowid
+
+        self._close_connection(conn)
 
     async def create_table(self, table, check_exists, echo):
         def _process_column(column):
@@ -113,16 +134,21 @@ class MySQLEngine(BaseEngine):
         setattr(entity, primary_key, last_row_id)
 
     async def fetchone(self, table, query, params):
-        async with self._connection.cursor(DictCursor) as cur:
+        conn = await self._get_connection()
+        async with conn.cursor() as cur:
             await cur.execute(query, params)
             res = await cur.fetchone()
             if res is None:
                 raise NoRowFoundError
 
-            return table(**res)
+        self._close_connection(conn)
+        return table(**res)
 
     async def fetchall(self, table, query, params):
-        async with self._connection.cursor(DictCursor) as cur:
+        conn = await self._get_connection()
+        async with conn.cursor() as cur:
             await cur.execute(query, params)
             res = await cur.fetchall()
-            return ResultQuery(table, res)
+
+        self._close_connection(conn)
+        return ResultQuery(table, res)

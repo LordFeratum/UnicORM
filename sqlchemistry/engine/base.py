@@ -6,7 +6,7 @@ from dsnparse import parse as parse_dsn
 class BaseEngine:
     def __init__(self, dsn=None, host=None, port=None, user=None, pwd=None,
                  database=None, use_pool=True, min_size=1, max_size=10,
-                 autocommit=True, loop=None):
+                 autocommit=True, echo=False, loop=None):
 
         if dsn:
             parsed = parse_dsn(dsn)
@@ -31,6 +31,7 @@ class BaseEngine:
         self._connection = None
         self._pool = None
         self._autocommit = autocommit
+        self._echo = echo
         self._use_pool = use_pool
         self._minsize = min_size
         self._maxsize = max_size
