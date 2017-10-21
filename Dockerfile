@@ -12,13 +12,5 @@ RUN apk --no-cache add \
       libc-dev \
       gcc
 
-COPY requirements*.txt /opt/
-COPY sqlchemistry/* /opt/
-COPY tests/* /opt/
-
-ARG INCLUDE_TEST=0
-RUN REQUERIMENTS_FILE="requirements.txt"; \
-    if [ $INCLUDE_TEST == 1 ]; then \
-        REQUERIMENTS_FILE="requirements-test.txt"; \
-    fi; \
-    pip install -r /opt/$REQUERIMENTS_FILE
+COPY . /opt/
+RUN pip install -r /opt/requirements-test.txt

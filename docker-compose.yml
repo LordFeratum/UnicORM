@@ -1,6 +1,14 @@
 version: '2'
 
 services:
+  sqlchemistry:
+    build: .
+    command: python
+    depends_on:
+      - mysql
+    environment:
+        - DB_DSN=mysql+pymysql://user:user@mysql/sqlchemistry
+
   mysql:
     image: mysql:5.7
     networks:
@@ -16,11 +24,6 @@ services:
       - MYSQL_DATABASE=sqlchemistry
       - MYSQL_USER=user
       - MYSQL_PASSWORD=user
-    volumes:
-      - sqlchemistry-data:/var/lib/mysql
 
 networks:
   sqlchemistry-net: {}
-
-volumes:
-  sqlchemistry-data: {}
