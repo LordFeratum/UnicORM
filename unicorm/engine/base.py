@@ -49,3 +49,6 @@ class BaseEngine:
 
     async def insert(self, entity):
         pass
+
+    async def delete(self, obj):
+        pass

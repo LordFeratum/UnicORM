@@ -61,6 +61,10 @@ class Column:
         return self._name
 
     @property
+    def value(self):
+        return self._column_type.value
+
+    @property
     def tablename(self):
         return self._table.tablename()
 

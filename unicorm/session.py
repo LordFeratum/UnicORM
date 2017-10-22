@@ -22,3 +22,6 @@ class Session:
 
     async def insert(self, entity):
         return await self._engine.insert(entity)
+
+    async def delete(self, obj):
+        return await self._engine.delete(obj)

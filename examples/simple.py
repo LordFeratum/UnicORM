@@ -1,10 +1,6 @@
+from time import sleep
+
 from asyncio import get_event_loop
-
-from sys import path
-from os.path import join, dirname, abspath
-from operator import and_, or_
-
-path.insert(0, join(dirname(abspath(__file__)), '..'))
 
 from unicorm.session import Session
 from unicorm.types import Int, Boolean, Float, String, ForeignKey
@@ -35,7 +31,7 @@ class Resume(Table):
 
 
 async def main():
-    dsn = "mysql+pymysql://user:user@localhost/sqlchemistry"
+    dsn = "mysql+pymysql://user:user@mysql/sqlchemistry"
     ss = Session(MySQLEngine(dsn=dsn, loop=loop, use_pool=True,
                              autocommit=True, echo=True))
     await ss.connect()
@@ -54,6 +50,11 @@ async def main():
     miquel = await query.one()
     print(miquel)
 
+    await ss.delete(resume)
+    print(resume)
+
 
 if __name__ == '__main__':
+    print("Waiting MySQL")
+    sleep(10)
     loop.run_until_complete(main())

@@ -158,3 +158,15 @@ class MySQLEngine(BaseEngine):
 
         self._close_connection(conn)
         return ResultQuery(table, res)
+
+    async def delete(self, obj):
+        primary_key = obj.primary_keys()[0]
+        sql = (
+            f'DELETE FROM `{obj.tablename()}` '
+            f'WHERE {primary_key.name} = %(value)s'
+        )
+        params = {
+            'value': primary_key.value
+        }
+        await self.execute(sql, params)
+        setattr(obj, primary_key.name, None)

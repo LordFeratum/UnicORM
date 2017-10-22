@@ -7,12 +7,14 @@ services:
     depends_on:
       - mysql
     environment:
-        - DB_DSN=mysql+pymysql://user:user@mysql/sqlchemistry
+      - DB_DSN=mysql+pymysql://user:user@mysql/unicorm
+    networks:
+      - unicorm-net
 
   mysql:
     image: mysql:5.7
     networks:
-      - sqlchemistry-net
+      - unicorm-net
     ports:
       - 3306:3306
     command:
@@ -21,9 +23,9 @@ services:
       - --skip-character-set-client-handshake
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=sqlchemistry
+      - MYSQL_DATABASE=unicorm
       - MYSQL_USER=user
       - MYSQL_PASSWORD=user
 
 networks:
-  sqlchemistry-net: {}
+  unicorm-net: {}
