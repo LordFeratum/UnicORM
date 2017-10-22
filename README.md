@@ -7,8 +7,8 @@ This ORM intends to provide the simpliest API to interact with your database.
 
 ### Model definition
 ```
-from sqlchemistry.types import Int, String
-from sqlchemistry.sql.schema import Table, Column
+from unicorm.types import Int, String
+from unicorm.sql.schema import Table, Column
 
 class User(Table):
     __tablename__ = 'users'
@@ -20,8 +20,8 @@ class User(Table):
 
 ### Create database
 ```
-from sqlchemistry.session import Session
-from sqlchemistry.engine.backends.mysql import MySQLEngine
+from unicorm.session import Session
+from unicorm.engine.backends.mysql import MySQLEngine
 
 session = Session(MySQLEngine(dsn=dsn, loop=loop))
 await session.connect()
