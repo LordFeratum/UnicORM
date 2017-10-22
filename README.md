@@ -1,4 +1,4 @@
-# SQLChemistry
+# UnicORM
 A simple python 3.6+ asynchronous data mapper ORM.
 
 This ORM intends to provide the simpliest API to interact with your database.

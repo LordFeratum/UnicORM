@@ -2,10 +2,10 @@ import pytest
 
 from os import environ
 
-from sqlchemistry.engine.backends.mysql import MySQLEngine
-from sqlchemistry.sql.schema import Table, Column
-from sqlchemistry.types import Int, Boolean, Float, String, ForeignKey
-from sqlchemistry.session import Session
+from unicorm.engine.backends.mysql import MySQLEngine
+from unicorm.sql.schema import Table, Column
+from unicorm.types import Int, Boolean, Float, String, ForeignKey
+from unicorm.session import Session
 
 
 class User(Table):

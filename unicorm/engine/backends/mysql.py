@@ -2,10 +2,10 @@ import logging
 
 from aiomysql import create_pool, connect, DictCursor
 
-from sqlchemistry.exceptions import NoRowFoundError
-from sqlchemistry.engine.base import BaseEngine
-from sqlchemistry.sql.base import ResultQuery
-from sqlchemistry.sql.backends.mysql import MySQLQuery
+from unicorm.exceptions import NoRowFoundError
+from unicorm.engine.base import BaseEngine
+from unicorm.sql.base import ResultQuery
+from unicorm.sql.backends.mysql import MySQLQuery
 
 
 class MySQLEngine(BaseEngine):

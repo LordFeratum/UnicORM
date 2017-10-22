@@ -1,5 +1,5 @@
-from sqlchemistry.types import AbstractType, ForeignKey
-from sqlchemistry.sql.operands import Equals, Is
+from unicorm.types import AbstractType, ForeignKey
+from unicorm.sql.operands import Equals, Is
 
 
 class Column:

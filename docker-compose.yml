@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  sqlchemistry:
+  unicorm:
     build: .
     command: python
     depends_on:

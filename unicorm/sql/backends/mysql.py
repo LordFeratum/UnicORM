@@ -1,4 +1,4 @@
-from sqlchemistry.sql.base import BaseQuery
+from unicorm.sql.base import BaseQuery
 
 
 class MySQLQuery(BaseQuery):
