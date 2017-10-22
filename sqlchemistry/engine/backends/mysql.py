@@ -107,7 +107,7 @@ class MySQLEngine(BaseEngine):
             f"CREATE TABLE {exists} {table.tablename()} (\n"
             f"{columns} \n"
             f"{foreign_keys}\n"
-             ");"
+            ");"
         )
 
         return await self.execute(corpus, None, echo=echo)
