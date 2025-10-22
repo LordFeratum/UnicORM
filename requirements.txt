@@ -1,2 +1,2 @@
 dsnparse==0.1.10
-aiomysql==0.0.9
+aiomysql==0.3.0
